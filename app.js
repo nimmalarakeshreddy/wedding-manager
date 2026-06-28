@@ -78,13 +78,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // ── NAV ────────────────────────────────────────────────────────
-function showPage(id, btn) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('page-' + id).classList.add('active');
-  if (btn) btn.classList.add('active');
-  if (id === 'reminders') updateMsgPreview();
-}
+// showPage is defined inline in index.html for reliability
 
 // ── SETTINGS ───────────────────────────────────────────────────
 function loadSettingsFields() {

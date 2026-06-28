@@ -397,6 +397,17 @@
 <div class="toast" id="toast"></div>
 
 <!-- ══ APP SCRIPT ════════════════════════════════════ -->
+<script>
+// Inline nav — works even if app.js has errors
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.nav-tab').forEach(function(t) { t.classList.remove('active'); });
+  var page = document.getElementById('page-' + id);
+  if (page) page.classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (id === 'reminders' && typeof updateMsgPreview === 'function') updateMsgPreview();
+}
+</script>
 <script src="app.js"></script>
 
 </body>

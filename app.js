@@ -148,6 +148,32 @@ function sheetsAPI(action, params = {}) {
     return Promise.resolve(null);
   }
   return new Promise((resolve) => {
+    const cbName = 'cb' + Date.now();
+    const p = Object.assign({ action: action, callback: cbName }, params);
+    const qs = Object.keys(p).map(k => k + '=' + encodeURIComponent(p[k])).join('&');
+    const tag = document.createElement('script');
+    const done = (data) => {
+      clearTimeout(timer);
+      try { document.head.removeChild(tag); } catch(e) {}
+      delete window[cbName];
+      resolve(data);
+    };
+    const timer = setTimeout(() => {
+      done(null);
+      toast('❌ Timed out — check your Apps Script URL');
+    }, 12000);
+    window[cbName] = done;
+    tag.onerror = () => { done(null); toast('❌ Script error — redeploy Apps Script'); };
+    tag.src = url + '?' + qs;
+    document.head.appendChild(tag);
+  });
+}) {
+  const url = settings.sheetUrl;
+  if (!url) {
+    toast('❌ Sheet URL not set. Go to Setup tab.');
+    return Promise.resolve(null);
+  }
+  return new Promise((resolve) => {
     // Use JSONP to bypass CORS with Google Apps Script
     const cbName = '_cb' + Date.now() + Math.floor(Math.random()*9999);
     const allParams = { action, callback: cbName, ...params };

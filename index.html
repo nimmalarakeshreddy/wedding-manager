@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<title>Wedding Manager</title>
+<title>Wedding Manager 🌸</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -536,23 +536,29 @@ function updateReminderDates() {
   if (e2) e2.textContent = fmt(d2);
 }
 
-// ── GOOGLE SHEETS (JSONP) ────────────────────────
+// ── GOOGLE SHEETS (fetch via redirect) ──────────
 function sheetsAPI(action, params) {
   params = params || {};
   var url = settings.sheetUrl;
   if (!url) { toast('❌ Sheet URL not set. Go to Setup tab.'); return Promise.resolve(null); }
-  return new Promise(function(resolve) {
-    var cbName = 'cb' + Date.now();
-    var all = Object.assign({ action: action, callback: cbName }, params);
-    var qs  = Object.keys(all).map(function(k){ return k + '=' + encodeURIComponent(all[k]); }).join('&');
-    var tag = document.createElement('script');
-    var timer = setTimeout(function(){ cleanup(); toast('❌ Timed out'); resolve(null); }, 12000);
-    function cleanup(){ clearTimeout(timer); delete window[cbName]; if(tag.parentNode) tag.parentNode.removeChild(tag); }
-    window[cbName] = function(data){ cleanup(); resolve(data); };
-    tag.onerror = function(){ cleanup(); toast('❌ Script error — redeploy Apps Script'); resolve(null); };
-    tag.src = url + '?' + qs;
-    document.head.appendChild(tag);
-  });
+  var all = Object.assign({ action: action }, params);
+  var qs  = Object.keys(all).map(function(k){ return encodeURIComponent(k) + '=' + encodeURIComponent(all[k]); }).join('&');
+  var fullUrl = url + '?' + qs;
+  return fetch(fullUrl, { redirect: 'follow' })
+    .then(function(r) { return r.text(); })
+    .then(function(text) {
+      try { return JSON.parse(text); }
+      catch(e) {
+        // Try to extract JSON from JSONP response
+        var m = text.match(/[^(]+\((.+)\)/s);
+        if (m) return JSON.parse(m[1]);
+        return null;
+      }
+    })
+    .catch(function(e) {
+      console.error('sheetsAPI error:', e);
+      return null;
+    });
 }
 
 function testConnection() {

@@ -148,30 +148,41 @@ function sheetsAPI(action, params = {}) {
     return Promise.resolve(null);
   }
   return new Promise((resolve) => {
-    const cbName = '_wm_cb_' + Date.now();
-    const qs = new URLSearchParams({ action, callback: cbName, ...params });
+    // Use JSONP to bypass CORS with Google Apps Script
+    const cbName = '_cb' + Date.now() + Math.floor(Math.random()*9999);
+    const allParams = { action, callback: cbName, ...params };
+    const qs = Object.keys(allParams)
+      .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(allParams[k]))
+      .join('&');
+
     const script = document.createElement('script');
+    script.type  = 'text/javascript';
+
     const timer = setTimeout(() => {
-      delete window[cbName];
-      document.body.removeChild(script);
-      toast('❌ Connection timed out. Check your URL.');
+      cleanup();
+      toast('❌ Timed out — check your Apps Script URL');
       resolve(null);
-    }, 10000);
-    window[cbName] = (data) => {
+    }, 15000);
+
+    function cleanup() {
       clearTimeout(timer);
       delete window[cbName];
-      document.body.removeChild(script);
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
+
+    window[cbName] = (data) => {
+      cleanup();
       resolve(data);
     };
-    script.src = url + '?' + qs.toString();
+
     script.onerror = () => {
-      clearTimeout(timer);
-      delete window[cbName];
-      document.body.removeChild(script);
-      toast('❌ Script load failed. Check your deployment URL.');
+      cleanup();
+      toast('❌ Failed to reach Apps Script — redeploy and try again');
       resolve(null);
     };
-    document.body.appendChild(script);
+
+    script.src = url + '?' + qs;
+    document.head.appendChild(script);
   });
 }
 

@@ -141,20 +141,38 @@ function updateReminderDates() {
 }
 
 // ── GOOGLE SHEETS API ──────────────────────────────────────────
-async function sheetsAPI(action, params = {}) {
+function sheetsAPI(action, params = {}) {
   const url = settings.sheetUrl;
   if (!url) {
     toast('❌ Sheet URL not set. Go to Setup tab.');
-    return null;
+    return Promise.resolve(null);
   }
-  try {
-    const qs = new URLSearchParams({ action, ...params });
-    const r  = await fetch(url + '?' + qs.toString());
-    return await r.json();
-  } catch (e) {
-    toast('❌ Connection failed: ' + e.message);
-    return null;
-  }
+  return new Promise((resolve) => {
+    const cbName = '_wm_cb_' + Date.now();
+    const qs = new URLSearchParams({ action, callback: cbName, ...params });
+    const script = document.createElement('script');
+    const timer = setTimeout(() => {
+      delete window[cbName];
+      document.body.removeChild(script);
+      toast('❌ Connection timed out. Check your URL.');
+      resolve(null);
+    }, 10000);
+    window[cbName] = (data) => {
+      clearTimeout(timer);
+      delete window[cbName];
+      document.body.removeChild(script);
+      resolve(data);
+    };
+    script.src = url + '?' + qs.toString();
+    script.onerror = () => {
+      clearTimeout(timer);
+      delete window[cbName];
+      document.body.removeChild(script);
+      toast('❌ Script load failed. Check your deployment URL.');
+      resolve(null);
+    };
+    document.body.appendChild(script);
+  });
 }
 
 async function testConnection() {

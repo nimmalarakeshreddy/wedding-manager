@@ -5,66 +5,235 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<title>Wedding Manager 🌸</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<title>Wedding Manager</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="style.css"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ivory:#FAF7F2;--white:#FFFFFF;--blush:#F0D5C8;--rose:#C4826A;--rose-dk:#b5705a;
+  --deep:#2C1F1F;--gold:#B89A6A;--gold-dk:#a08050;--muted:#8A7570;
+  --green:#5A8A6A;--green-dk:#4a7a5a;--red:#C45A5A;--surface:#F5F0EA;--border:#E8DDD5;--blue:#4A6AA0;
+}
+body{font-family:'Jost',sans-serif;background:var(--ivory);color:var(--deep);min-height:100vh;font-size:14px;line-height:1.5}
+
+/* NAV */
+.nav{background:var(--deep);position:sticky;top:0;z-index:200;min-height:56px;display:flex;align-items:center;justify-content:space-between;padding:10px 20px;gap:8px;flex-wrap:wrap;box-shadow:0 2px 12px rgba(0,0,0,0.25)}
+.nav-brand{font-family:'Cormorant Garamond',serif;font-size:21px;font-style:italic;color:var(--gold);white-space:nowrap}
+.nav-tabs{display:flex;gap:2px;flex-wrap:wrap}
+.nav-tab{padding:7px 12px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;color:rgba(255,255,255,0.45);cursor:pointer;border-radius:3px;transition:all 0.2s;border:none;background:none;white-space:nowrap;font-family:'Jost',sans-serif}
+.nav-tab:hover{color:#fff;background:rgba(255,255,255,0.08)}
+.nav-tab.active{background:var(--rose);color:#fff}
+
+/* PAGES */
+.page{display:none;padding:24px 20px;max-width:960px;margin:0 auto}
+.page.active{display:block}
+.page-header{margin-bottom:22px}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:clamp(26px,5vw,38px);font-weight:300;margin-bottom:5px}
+.page-desc{font-size:13px;font-weight:300;color:var(--muted);line-height:1.6}
+
+/* CARDS */
+.card{background:var(--white);border:1px solid var(--border);padding:22px;margin-bottom:16px}
+.card-title{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:16px}
+
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* FIELDS */
+.field{margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.field label{display:block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;font-weight:600}
+.field input,.field select,.field textarea{width:100%;background:var(--surface);border:1px solid var(--border);padding:11px 14px;font-family:'Jost',sans-serif;font-size:14px;font-weight:300;color:var(--deep);outline:none;transition:border-color 0.2s,box-shadow 0.2s;border-radius:0;-webkit-appearance:none;appearance:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--rose);box-shadow:0 0 0 3px rgba(196,130,106,0.12)}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23B89A6A'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;cursor:pointer}
+.field textarea{resize:vertical;min-height:80px;line-height:1.6}
+.field .hint{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.5}
+.igrp{display:flex;gap:8px;align-items:stretch}
+.igrp input{flex:1}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 20px;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border:none;transition:all 0.2s;border-radius:0;white-space:nowrap}
+.btn:active{transform:scale(0.98)}
+.btn-primary{background:var(--deep);color:var(--ivory)}.btn-primary:hover{background:var(--rose)}
+.btn-rose{background:var(--rose);color:#fff}.btn-rose:hover{background:var(--rose-dk)}
+.btn-gold{background:var(--gold);color:#fff}.btn-gold:hover{background:var(--gold-dk)}
+.btn-green{background:var(--green);color:#fff}.btn-green:hover{background:var(--green-dk)}
+.btn-outline{background:transparent;color:var(--deep);border:1px solid var(--border)}.btn-outline:hover{border-color:var(--rose);color:var(--rose)}
+.btn-danger{background:#FBE8E8;color:var(--red);border:1px solid #f0c0c0}.btn-danger:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.btn-sm{padding:7px 13px;font-size:9px}
+.btn-full{width:100%}
+.arow{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:center}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.stat{background:var(--white);border:1px solid var(--border);padding:16px 10px;text-align:center}
+.stat-n{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:var(--deep);line-height:1}
+.stat-l{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:3px}
+
+/* ADD FORM */
+.add-form{background:var(--surface);border:1px solid var(--border);padding:18px;margin-bottom:16px}
+.add-row{display:grid;grid-template-columns:2fr 2fr 1.5fr auto;gap:10px;align-items:end}
+
+/* TABLE */
+.twrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:540px}
+thead th{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:600;padding:9px 11px;border-bottom:2px solid var(--border);text-align:left;white-space:nowrap;background:var(--surface)}
+tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s}
+tbody tr:hover{background:var(--surface)}
+tbody td{padding:10px 11px;font-weight:300;vertical-align:middle}
+.badge{display:inline-block;padding:2px 8px;font-size:9px;letter-spacing:1px;font-weight:600;text-transform:uppercase}
+.badge-green{background:#E8F5EC;color:var(--green)}
+.badge-muted{background:var(--surface);color:var(--muted)}
+.rsvp-sel{font-size:11px;padding:5px 26px 5px 8px;border:1px solid var(--border);background:var(--surface);font-family:'Jost',sans-serif;cursor:pointer;outline:none;border-radius:0;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23B89A6A'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 7px center}
+
+/* NOTICES */
+.notice{padding:13px 16px;font-size:13px;line-height:1.65;margin-bottom:14px;border-left:3px solid}
+.notice strong{font-weight:600}
+.ny{background:#FEF9EC;border-color:#E8D890;color:#7A6010}
+.ng{background:#E8F5EC;border-color:#90C8A0;color:#1A5A2A}
+.nb{background:#EEF2FB;border-color:#90A8D8;color:#1A3070}
+
+/* REMINDERS */
+.rlist{display:flex;flex-direction:column;gap:10px}
+.ritem{display:flex;align-items:center;gap:14px;padding:13px 16px;background:var(--surface);border:1px solid var(--border)}
+.rdot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.rdot.g{background:var(--green)}.rdot.y{background:var(--gold)}.rdot.b{background:var(--blue)}
+.rinfo{flex:1;min-width:0}
+.rtitle{font-size:13px;font-weight:500}
+.rsub{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* TEMPLATE VARS */
+.tpl-vars{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.tpl-var{background:var(--surface);border:1px solid var(--border);padding:4px 11px;font-size:11px;color:var(--muted);cursor:pointer;transition:all 0.2s;font-family:'Jost',sans-serif;user-select:none}
+.tpl-var:hover{background:var(--blush);border-color:var(--rose);color:var(--rose)}
+
+/* PREVIEW */
+.wa-wrap{background:#E5DDD5;border-radius:8px;padding:14px;margin-top:10px}
+.wa-bub{background:#fff;border-radius:0 8px 8px 8px;padding:12px 14px;font-size:13px;line-height:1.7;color:#2C2C2C;max-width:100%;box-shadow:0 1px 2px rgba(0,0,0,0.1);white-space:pre-wrap;word-break:break-word}
+
+/* PHOTO STEPS */
+.psteps{display:flex;flex-direction:column}
+.pstep{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--border)}
+.pstep:last-child{border-bottom:none}
+.pnum{width:34px;height:34px;background:var(--deep);color:var(--ivory);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:17px;flex-shrink:0}
+.pstep h3{font-size:14px;font-weight:500;margin-bottom:4px;font-family:'Jost',sans-serif}
+.pstep p{font-size:13px;font-weight:300;color:var(--muted);line-height:1.6}
+
+/* CONN STATUS */
+.conn-box{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:500;padding:9px 14px;border:1px solid var(--border);background:var(--surface)}
+.cdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cdot.ok{background:var(--green)}.cdot.err{background:var(--red)}.cdot.chk{background:var(--gold);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+/* SPINNER */
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(44,31,31,0.15);border-top-color:var(--deep);border-radius:50%;animation:sp 0.7s linear infinite;vertical-align:middle;margin-right:5px}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--deep);color:var(--ivory);padding:11px 22px;font-size:13px;z-index:999;transition:transform 0.3s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.2);max-width:90vw;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* MODAL */
+.moverlay{display:none;position:fixed;inset:0;background:rgba(44,31,31,0.55);z-index:300;align-items:center;justify-content:center;padding:20px}
+.moverlay.open{display:flex}
+.modal{background:#fff;max-width:480px;width:100%;padding:30px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+.modal h2{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;margin-bottom:6px}
+.modal-sub{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5}
+.modal-actions{display:flex;gap:8px;margin-top:18px;justify-content:flex-end}
+
+/* EMPTY */
+.empty{text-align:center;padding:44px 20px;color:var(--muted)}
+.empty-i{font-size:34px;margin-bottom:10px}
+.empty p{font-size:13px;line-height:1.6}
+
+/* UTILITIES */
+.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}
+.mb0{margin-bottom:0!important}
+.muted{color:var(--muted)}
+.hidden{display:none!important}
+.flex{display:flex;align-items:center;gap:6px}
+
+/* ── RESPONSIVE ─────────────────────────────── */
+@media(min-width:1024px){
+  .page{padding:32px}
+  .card{padding:26px}
+  .wa-bub{max-width:420px}
+}
+@media(min-width:768px) and (max-width:1023px){
+  .page{padding:26px 22px}
+  .stats{grid-template-columns:repeat(4,1fr)}
+  .add-row{grid-template-columns:1fr 1fr}
+  .add-row .btn{width:100%}
+}
+@media(max-width:767px){
+  .nav{padding:8px 14px}
+  .nav-brand{font-size:18px}
+  .nav-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;padding-bottom:2px}
+  .nav-tab{flex-shrink:0;padding:6px 10px;font-size:9px}
+  .page{padding:14px}
+  .card{padding:14px}
+  .g2{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,1fr);gap:8px}
+  .stat-n{font-size:30px}
+  .add-row{grid-template-columns:1fr 1fr;gap:8px}
+  .btn{padding:10px 14px}
+  .btn-sm{padding:6px 11px}
+  .ritem{flex-wrap:wrap;gap:8px}
+  .modal{padding:20px 16px}
+  .pstep{flex-direction:column;gap:10px}
+}
+@media(max-width:380px){
+  .nav-brand{font-size:16px}
+  .stat-n{font-size:26px}
+  .card{padding:12px}
+}
+</style>
 </head>
 <body>
 
-<!-- ══ NAVBAR ══════════════════════════════════════ -->
+<!-- NAV -->
 <nav class="nav">
   <div class="nav-brand">✦ Wedding Manager</div>
   <div class="nav-tabs">
-    <button class="nav-tab active"  onclick="showPage('setup',this)">⚙ Setup</button>
-    <button class="nav-tab"         onclick="showPage('templates',this)">✉ Templates</button>
-    <button class="nav-tab"         onclick="showPage('guests',this)">👥 Guests</button>
-    <button class="nav-tab"         onclick="showPage('reminders',this)">🔔 Remind</button>
-    <button class="nav-tab"         onclick="showPage('photos',this)">📸 Photos</button>
+    <button class="nav-tab active" onclick="showPage('setup',this)">⚙ Setup</button>
+    <button class="nav-tab" onclick="showPage('templates',this)">✉ Templates</button>
+    <button class="nav-tab" onclick="showPage('guests',this)">👥 Guests</button>
+    <button class="nav-tab" onclick="showPage('reminders',this)">🔔 Remind</button>
+    <button class="nav-tab" onclick="showPage('photos',this)">📸 Photos</button>
   </div>
 </nav>
 
-<!-- ══ SETUP ════════════════════════════════════════ -->
+<!-- ══ SETUP ══ -->
 <div class="page active" id="page-setup">
   <div class="page-header">
     <h1 class="page-title">Wedding Setup</h1>
-    <p class="page-desc">Connect Google Sheets as your database — guest list syncs across all devices automatically.</p>
+    <p class="page-desc">Connect Google Sheets as your database — guest list syncs across all devices.</p>
   </div>
-
-  <div class="notice notice-green">
-    <strong>✅ How it works:</strong> Guests & RSVP data live in a Google Sheet. Any phone, tablet or laptop that opens this app reads from the same sheet in real time — no accounts, no sync buttons.
+  <div class="notice ng">
+    <strong>✅ How it works:</strong> Guests & RSVP data live in a Google Sheet. Any phone, tablet or laptop that opens this app reads the same data in real time.
   </div>
-
-  <!-- Google Sheets Connection -->
   <div class="card">
     <div class="card-title">Google Sheets Connection</div>
-
     <div class="field">
       <label>Apps Script Web App URL</label>
-      <div class="input-group">
+      <div class="igrp">
         <input type="url" id="s-sheet-url" placeholder="https://script.google.com/macros/s/YOUR_ID/exec"/>
         <button class="btn btn-gold" onclick="testConnection()">Test</button>
       </div>
-      <div class="hint">Paste your deployed Google Apps Script URL. See the one-time setup steps below.</div>
+      <div class="hint">Paste your deployed Google Apps Script URL here.</div>
     </div>
-
-    <div id="conn-status-box" class="hidden mt-8"></div>
-
-    <div class="notice notice-yellow mt-12 mb-0">
-      <strong>📋 One-time Google Setup (5 min):</strong><br/>
-      1. Open <strong>google-apps-script.gs</strong> → copy all the code<br/>
-      2. Go to <strong>script.google.com</strong> → New Project → paste code → Save<br/>
-      3. Click <strong>Deploy → New Deployment → Web App</strong><br/>
-      4. Execute as: <strong>Me</strong> &nbsp;·&nbsp; Who has access: <strong>Anyone</strong><br/>
-      5. Click Deploy → Copy the Web App URL → paste above → Test
+    <div id="conn-box" class="hidden mt8"></div>
+    <div class="notice ny mt12 mb0">
+      <strong>📋 One-time Google Setup:</strong><br/>
+      1. Open your Google Sheet → <strong>Extensions → Apps Script</strong><br/>
+      2. Delete existing code → paste the Apps Script code → Save<br/>
+      3. <strong>Deploy → New Deployment → Web App</strong><br/>
+      4. Execute as: <strong>Me</strong> · Access: <strong>Anyone</strong> → Deploy<br/>
+      5. Copy Web App URL → paste above → Test
     </div>
   </div>
-
-  <!-- Couple & Event -->
   <div class="card">
     <div class="card-title">Couple & Event Details</div>
-    <div class="grid-2">
+    <div class="g2">
       <div class="field"><label>Bride's Name</label><input type="text" id="s-bride" placeholder="e.g. Sri Harshita Bokka"/></div>
       <div class="field"><label>Groom's Name</label><input type="text" id="s-groom" placeholder="e.g. Vivek Matcha"/></div>
       <div class="field"><label>Wedding Date</label><input type="date" id="s-date"/></div>
@@ -75,32 +244,28 @@
     <div class="field"><label>Google Maps Link 📍</label><input type="url" id="s-maps" placeholder="https://maps.app.goo.gl/..."/></div>
     <div class="field"><label>Couple Photo URL 📸</label><input type="url" id="s-photo" placeholder="https://i.imgur.com/yourphoto.jpg"/></div>
   </div>
-
-  <!-- WasenderAPI -->
   <div class="card">
-    <div class="card-title">WasenderAPI — WhatsApp Sender</div>
+    <div class="card-title">WasenderAPI — WhatsApp</div>
     <div class="field">
       <label>API Token</label>
-      <input type="password" id="s-token" placeholder="Paste your WasenderAPI token here"/>
-      <div class="hint">Get from wasenderapi.com → Your Instance → Credentials tab → API Access Token</div>
+      <input type="password" id="s-token" placeholder="Your WasenderAPI token"/>
+      <div class="hint">Get from wasenderapi.com → Your Instance → Credentials tab</div>
     </div>
   </div>
-
-  <div class="actions-row">
+  <div class="arow">
     <button class="btn btn-primary" onclick="saveSettings()">💾 Save Settings</button>
-    <button class="btn btn-outline" onclick="showPage('templates', document.querySelectorAll('.nav-tab')[1])">Next: Templates →</button>
+    <button class="btn btn-outline" onclick="showPage('templates',document.querySelectorAll('.nav-tab')[1])">Next: Templates →</button>
   </div>
 </div>
 
-<!-- ══ TEMPLATES ═════════════════════════════════════ -->
+<!-- ══ TEMPLATES ══ -->
 <div class="page" id="page-templates">
   <div class="page-header">
     <h1 class="page-title">Message Templates</h1>
-    <p class="page-desc">Write your own messages. Click any variable tag to insert it at the cursor position.</p>
+    <p class="page-desc">Write your own messages. Click variable tags to insert them.</p>
   </div>
-
-  <div class="notice notice-blue">
-    <strong>Available variables — click to insert:</strong>
+  <div class="notice nb">
+    <strong>Click a variable to insert it at your cursor:</strong>
     <div class="tpl-vars">
       <span class="tpl-var" onclick="insertVar('{name}')">👤 {name}</span>
       <span class="tpl-var" onclick="insertVar('{bride}')">👰 {bride}</span>
@@ -114,253 +279,166 @@
       <span class="tpl-var" onclick="insertVar('{album}')">🖼 {album}</span>
     </div>
   </div>
-
-  <!-- Invitation -->
   <div class="card">
     <div class="card-title">🌸 Wedding Invitation</div>
-    <div class="field">
-      <label>Message</label>
-      <textarea id="tpl-invite" rows="10" onfocus="setActiveTpl(this)"></textarea>
-    </div>
-    <div class="actions-row mt-0">
+    <div class="field"><label>Message</label><textarea id="tpl-invite" rows="9" onfocus="setActiveTpl(this)"></textarea></div>
+    <div class="arow mt8" style="margin-top:8px">
       <button class="btn btn-outline btn-sm" onclick="previewTpl('invite')">👁 Preview</button>
-      <button class="btn btn-gold btn-sm" onclick="resetTpl('invite')">↺ Reset Default</button>
+      <button class="btn btn-gold btn-sm" onclick="resetTpl('invite')">↺ Reset</button>
     </div>
   </div>
-
-  <!-- 4-Day Reminder -->
   <div class="card">
     <div class="card-title">⏰ 4-Day Reminder</div>
-    <div class="field">
-      <label>Message</label>
-      <textarea id="tpl-reminder4" rows="9" onfocus="setActiveTpl(this)"></textarea>
-    </div>
-    <div class="actions-row mt-0">
+    <div class="field"><label>Message</label><textarea id="tpl-reminder4" rows="8" onfocus="setActiveTpl(this)"></textarea></div>
+    <div class="arow mt8" style="margin-top:8px">
       <button class="btn btn-outline btn-sm" onclick="previewTpl('reminder4')">👁 Preview</button>
-      <button class="btn btn-gold btn-sm" onclick="resetTpl('reminder4')">↺ Reset Default</button>
+      <button class="btn btn-gold btn-sm" onclick="resetTpl('reminder4')">↺ Reset</button>
     </div>
   </div>
-
-  <!-- 2-Day Reminder -->
   <div class="card">
     <div class="card-title">🔔 2-Day Reminder</div>
-    <div class="field">
-      <label>Message</label>
-      <textarea id="tpl-reminder2" rows="9" onfocus="setActiveTpl(this)"></textarea>
-    </div>
-    <div class="actions-row mt-0">
+    <div class="field"><label>Message</label><textarea id="tpl-reminder2" rows="8" onfocus="setActiveTpl(this)"></textarea></div>
+    <div class="arow mt8" style="margin-top:8px">
       <button class="btn btn-outline btn-sm" onclick="previewTpl('reminder2')">👁 Preview</button>
-      <button class="btn btn-gold btn-sm" onclick="resetTpl('reminder2')">↺ Reset Default</button>
+      <button class="btn btn-gold btn-sm" onclick="resetTpl('reminder2')">↺ Reset</button>
     </div>
   </div>
-
-  <!-- Photo Album -->
   <div class="card">
     <div class="card-title">📸 Photo Album (After Wedding)</div>
-    <div class="field">
-      <label>Message</label>
-      <textarea id="tpl-photo" rows="10" onfocus="setActiveTpl(this)"></textarea>
-    </div>
-    <div class="actions-row mt-0">
+    <div class="field"><label>Message</label><textarea id="tpl-photo" rows="9" onfocus="setActiveTpl(this)"></textarea></div>
+    <div class="arow mt8" style="margin-top:8px">
       <button class="btn btn-outline btn-sm" onclick="previewTpl('photo')">👁 Preview</button>
-      <button class="btn btn-gold btn-sm" onclick="resetTpl('photo')">↺ Reset Default</button>
+      <button class="btn btn-gold btn-sm" onclick="resetTpl('photo')">↺ Reset</button>
     </div>
   </div>
-
-  <div class="actions-row">
+  <div class="arow">
     <button class="btn btn-primary" onclick="saveTemplates()">💾 Save All Templates</button>
-    <button class="btn btn-outline" onclick="showPage('guests', document.querySelectorAll('.nav-tab')[2])">Next: Guests →</button>
+    <button class="btn btn-outline" onclick="showPage('guests',document.querySelectorAll('.nav-tab')[2])">Next: Guests →</button>
   </div>
 </div>
 
-<!-- ══ GUESTS ════════════════════════════════════════ -->
+<!-- ══ GUESTS ══ -->
 <div class="page" id="page-guests">
   <div class="page-header">
     <h1 class="page-title">Guest List</h1>
     <p class="page-desc">Saved in Google Sheets — visible on every device instantly.</p>
   </div>
-
-  <!-- Stats -->
-  <div class="stats-row">
-    <div class="stat-box"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total</div></div>
-    <div class="stat-box"><div class="stat-num" id="stat-invited">0</div><div class="stat-label">Invited</div></div>
-    <div class="stat-box"><div class="stat-num" id="stat-confirmed">0</div><div class="stat-label">Confirmed</div></div>
-    <div class="stat-box"><div class="stat-num" id="stat-declined">0</div><div class="stat-label">Declined</div></div>
+  <div class="stats">
+    <div class="stat"><div class="stat-n" id="stat-total">0</div><div class="stat-l">Total</div></div>
+    <div class="stat"><div class="stat-n" id="stat-invited">0</div><div class="stat-l">Invited</div></div>
+    <div class="stat"><div class="stat-n" id="stat-confirmed">0</div><div class="stat-l">Confirmed</div></div>
+    <div class="stat"><div class="stat-n" id="stat-declined">0</div><div class="stat-l">Declined</div></div>
   </div>
-
-  <!-- Add Guest -->
   <div class="add-form">
-    <div class="card-title mb-0" style="margin-bottom:14px">Add Guest</div>
-    <div class="add-form-row">
-      <div class="field" style="margin:0">
-        <label>Name</label>
-        <input type="text" id="g-name" placeholder="Full name" onkeydown="if(event.key==='Enter')addGuest()"/>
+    <div class="card-title mb0" style="margin-bottom:12px">Add Guest</div>
+    <div class="add-row">
+      <div class="field" style="margin:0"><label>Name</label><input type="text" id="g-name" placeholder="Full name" onkeydown="if(event.key==='Enter')addGuest()"/></div>
+      <div class="field" style="margin:0"><label>Phone (+country code)</label><input type="tel" id="g-phone" placeholder="+919876543210" onkeydown="if(event.key==='Enter')addGuest()"/></div>
+      <div class="field" style="margin:0"><label>Group</label>
+        <select id="g-group"><option>Family</option><option>Friends</option><option>Colleagues</option><option>Other</option></select>
       </div>
-      <div class="field" style="margin:0">
-        <label>Phone (+ country code)</label>
-        <input type="tel" id="g-phone" placeholder="+919876543210" onkeydown="if(event.key==='Enter')addGuest()"/>
-      </div>
-      <div class="field" style="margin:0">
-        <label>Group</label>
-        <select id="g-group">
-          <option>Family</option>
-          <option>Friends</option>
-          <option>Colleagues</option>
-          <option>Other</option>
-        </select>
-      </div>
-      <div class="field" style="margin:0">
-        <label>&nbsp;</label>
-        <button class="btn btn-rose btn-full" onclick="addGuest()">+ Add</button>
-      </div>
+      <div class="field" style="margin:0"><label>&nbsp;</label><button class="btn btn-rose btn-full" onclick="addGuest()">+ Add</button></div>
     </div>
   </div>
-
-  <!-- Bulk Actions -->
-  <div class="actions-row" style="margin-bottom:14px">
+  <div class="arow" style="margin-bottom:12px">
     <button class="btn btn-green btn-sm" onclick="sendBulkInvite()">📱 Invite All</button>
     <button class="btn btn-outline btn-sm" onclick="loadGuests()">🔄 Refresh</button>
     <button class="btn btn-gold btn-sm" onclick="exportCSV()">⬇ CSV</button>
     <button class="btn btn-outline btn-sm" onclick="document.getElementById('csv-inp').click()">⬆ Import</button>
     <input type="file" id="csv-inp" accept=".csv" style="display:none" onchange="importCSV(this)"/>
   </div>
-
-  <!-- Table -->
   <div class="card" style="padding:0;overflow:hidden">
-    <div class="table-wrap">
+    <div class="twrap">
       <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Group</th>
-            <th>RSVP</th>
-            <th>Notified</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Name</th><th>Phone</th><th>Group</th><th>RSVP</th><th>Notified</th><th>Actions</th></tr></thead>
         <tbody id="guest-tbody">
-          <tr>
-            <td colspan="6">
-              <div class="empty-state">
-                <div class="empty-icon">👥</div>
-                <p>Connect Google Sheets in Setup,<br/>then guests will appear here.</p>
-              </div>
-            </td>
-          </tr>
+          <tr><td colspan="6"><div class="empty"><div class="empty-i">👥</div><p>Connect Google Sheets in Setup,<br/>then guests will appear here.</p></div></td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </div>
 
-<!-- ══ REMINDERS ═════════════════════════════════════ -->
+<!-- ══ REMINDERS ══ -->
 <div class="page" id="page-reminders">
   <div class="page-header">
     <h1 class="page-title">Reminders</h1>
-    <p class="page-desc">Send your saved message templates to all guests with one tap.</p>
+    <p class="page-desc">Send your saved templates to all guests with one tap.</p>
   </div>
-
-  <!-- Live Preview -->
   <div class="card">
     <div class="card-title">Live Message Preview</div>
-    <p class="text-small text-muted" style="margin-bottom:10px">Preview of the Invitation template for a guest named "Ravi"</p>
-    <div class="wa-preview">
-      <div class="wa-bubble" id="msg-preview">Loading preview...</div>
-    </div>
-    <div class="actions-row mt-12">
-      <button class="btn btn-outline btn-sm" onclick="showPage('templates', document.querySelectorAll('.nav-tab')[1])">✏ Edit Templates</button>
-      <button class="btn btn-gold btn-sm" onclick="updateMsgPreview()">🔄 Refresh Preview</button>
+    <p class="muted" style="font-size:12px;margin-bottom:8px">Preview of Invitation template for a guest named "Ravi"</p>
+    <div class="wa-wrap"><div class="wa-bub" id="msg-preview">Loading preview...</div></div>
+    <div class="arow mt12" style="margin-top:10px">
+      <button class="btn btn-outline btn-sm" onclick="showPage('templates',document.querySelectorAll('.nav-tab')[1])">✏ Edit Templates</button>
+      <button class="btn btn-gold btn-sm" onclick="updateMsgPreview()">🔄 Refresh</button>
     </div>
   </div>
-
-  <!-- Schedule -->
   <div class="card">
     <div class="card-title">Send Reminders</div>
-    <div class="reminder-list">
-      <div class="reminder-item">
-        <div class="rdot active"></div>
-        <div class="rinfo">
-          <div class="rtitle">Initial Invitation</div>
-          <div class="rsub">Uses the Invitation template · sends to all guests</div>
-        </div>
+    <div class="rlist">
+      <div class="ritem">
+        <div class="rdot g"></div>
+        <div class="rinfo"><div class="rtitle">Initial Invitation</div><div class="rsub">Uses the Invitation template</div></div>
         <button class="btn btn-green btn-sm" onclick="sendBulkInvite()">Send All</button>
       </div>
-      <div class="reminder-item">
-        <div class="rdot pending"></div>
-        <div class="rinfo">
-          <div class="rtitle">4-Day Reminder</div>
-          <div class="rsub" id="reminder-4day">4 days before wedding</div>
-        </div>
+      <div class="ritem">
+        <div class="rdot y"></div>
+        <div class="rinfo"><div class="rtitle">4-Day Reminder</div><div class="rsub" id="reminder-4day">4 days before wedding</div></div>
         <button class="btn btn-gold btn-sm" onclick="sendReminder('reminder4')">Send Now</button>
       </div>
-      <div class="reminder-item">
-        <div class="rdot pending"></div>
-        <div class="rinfo">
-          <div class="rtitle">2-Day Reminder</div>
-          <div class="rsub" id="reminder-2day">2 days before wedding</div>
-        </div>
+      <div class="ritem">
+        <div class="rdot y"></div>
+        <div class="rinfo"><div class="rtitle">2-Day Reminder</div><div class="rsub" id="reminder-2day">2 days before wedding</div></div>
         <button class="btn btn-rose btn-sm" onclick="sendReminder('reminder2')">Send Now</button>
       </div>
-      <div class="reminder-item">
-        <div class="rdot blue"></div>
-        <div class="rinfo">
-          <div class="rtitle">Photo Album</div>
-          <div class="rsub">After the wedding — sends Google Drive album link</div>
-        </div>
-        <button class="btn btn-outline btn-sm" onclick="showPage('photos', document.querySelectorAll('.nav-tab')[4])">Setup →</button>
+      <div class="ritem">
+        <div class="rdot b"></div>
+        <div class="rinfo"><div class="rtitle">Photo Album</div><div class="rsub">After the wedding</div></div>
+        <button class="btn btn-outline btn-sm" onclick="showPage('photos',document.querySelectorAll('.nav-tab')[4])">Setup →</button>
       </div>
     </div>
   </div>
-
-  <!-- Custom Blast -->
   <div class="card">
-    <div class="card-title">Custom Message Blast</div>
-    <div class="field">
-      <label>Message (use {name} to personalize)</label>
-      <textarea id="blast-msg" rows="5" placeholder="e.g. Hi {name}! Please confirm your attendance for the wedding..."></textarea>
-    </div>
+    <div class="card-title">Custom Blast</div>
+    <div class="field"><label>Message (use {name} to personalize)</label><textarea id="blast-msg" rows="4" placeholder="Hi {name}! Just a reminder..."></textarea></div>
     <button class="btn btn-primary" onclick="sendBlast()">📱 Send to All Guests</button>
   </div>
 </div>
 
-<!-- ══ PHOTOS ════════════════════════════════════════ -->
+<!-- ══ PHOTOS ══ -->
 <div class="page" id="page-photos">
   <div class="page-header">
     <h1 class="page-title">Photo Sharing</h1>
     <p class="page-desc">After the wedding, send your Google Drive album to all guests.</p>
   </div>
-
   <div class="card">
     <div class="card-title">Steps</div>
-    <div class="photo-steps">
-      <div class="photo-step">
-        <div class="step-num">1</div>
-        <div class="step-content">
-          <h3>Upload photos to Google Drive</h3>
-          <p>Create a new folder → upload all wedding photos → Right-click folder → Share → Anyone with the link → Viewer.</p>
-        </div>
+    <div class="psteps">
+      <div class="pstep">
+        <div class="pnum">1</div>
+        <div><h3>Upload to Google Drive</h3><p>Create folder → upload photos → Share → Anyone with the link → Viewer.</p></div>
       </div>
-      <div class="photo-step">
-        <div class="step-num">2</div>
-        <div class="step-content">
-          <h3>Paste the shareable link</h3>
-          <div class="field mt-8">
+      <div class="pstep">
+        <div class="pnum">2</div>
+        <div style="flex:1">
+          <h3>Paste the link below</h3>
+          <div class="field mt8">
             <label>Google Drive Album Link</label>
-            <div class="input-group">
+            <div class="igrp">
               <input type="url" id="drive-link" placeholder="https://drive.google.com/drive/folders/..."/>
               <button class="btn btn-gold" onclick="saveDriveLink()">Save</button>
             </div>
           </div>
         </div>
       </div>
-      <div class="photo-step">
-        <div class="step-num">3</div>
-        <div class="step-content">
-          <h3>Send album to all guests</h3>
-          <p>Uses your Photo Album template from the Templates tab. Edit the message there.</p>
-          <div class="actions-row mt-8">
-            <button class="btn btn-primary" onclick="sendPhotoLink()">📸 Send Album to All Guests</button>
+      <div class="pstep">
+        <div class="pnum">3</div>
+        <div>
+          <h3>Send to all guests</h3>
+          <p>Uses your Photo Album template. Edit it in the Templates tab.</p>
+          <div class="arow mt8" style="margin-top:8px">
+            <button class="btn btn-primary" onclick="sendPhotoLink()">📸 Send Album to All</button>
           </div>
         </div>
       </div>
@@ -368,47 +446,412 @@
   </div>
 </div>
 
-<!-- ══ PREVIEW MODAL ════════════════════════════════ -->
-<div class="modal-overlay" id="preview-modal">
+<!-- PREVIEW MODAL -->
+<div class="moverlay" id="preview-modal">
   <div class="modal">
-    <h2 id="preview-title">Message Preview</h2>
-    <p class="modal-sub">How the message will look for a guest named "Ravi"</p>
-    <div class="wa-preview">
-      <div class="wa-bubble" id="preview-body" style="max-width:100%"></div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closePreview()">Close</button>
-    </div>
+    <h2 id="preview-title">Preview</h2>
+    <p class="modal-sub">Sample for guest named "Ravi"</p>
+    <div class="wa-wrap"><div class="wa-bub" id="preview-body" style="max-width:100%"></div></div>
+    <div class="modal-actions"><button class="btn btn-outline" onclick="closePreview()">Close</button></div>
   </div>
 </div>
 
-<!-- ══ SEND MODAL ════════════════════════════════════ -->
-<div class="modal-overlay" id="send-modal">
+<!-- SEND MODAL -->
+<div class="moverlay" id="send-modal">
   <div class="modal">
     <h2 id="modal-title">Sending</h2>
     <p class="modal-sub" id="modal-sub"></p>
     <div id="modal-progress"></div>
-    <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closeModal()">Close</button>
-    </div>
+    <div class="modal-actions"><button class="btn btn-outline" onclick="closeModal()">Close</button></div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<!-- ══ APP SCRIPT ════════════════════════════════════ -->
 <script>
-// Inline nav — works even if app.js has errors
-function showPage(id, btn) {
-  document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
-  document.querySelectorAll('.nav-tab').forEach(function(t) { t.classList.remove('active'); });
-  var page = document.getElementById('page-' + id);
-  if (page) page.classList.add('active');
-  if (btn) btn.classList.add('active');
-  if (id === 'reminders' && typeof updateMsgPreview === 'function') updateMsgPreview();
-}
-</script>
-<script src="app.js"></script>
+// ── STATE ───────────────────────────────────────
+var guests    = [];
+var settings  = {};
+var driveLink = '';
+var activeTpl = null;
 
+var DEFAULT_TPLS = {
+  invite: "🌸 *Wedding Invitation*\n\nDear {name},\n\nYou're warmly invited to the wedding of *{bride} & {groom}*!\n\n📅 {date} at {time}\n📍 {venue}\n{address}\n🗺️ Directions: {maps}\n📸 Our Photo: {photo}\n\nWe look forward to celebrating with you! 💕",
+  reminder4: "⏰ *4-Day Reminder*\n\nDear {name},\n\nJust a reminder — the wedding of *{bride} & {groom}* is in 4 days!\n\n📅 {date} at {time}\n📍 {venue}\n🗺️ Directions: {maps}\n\nWe can't wait to see you! 💕",
+  reminder2: "🔔 *2-Day Reminder*\n\nDear {name},\n\nThe big day is almost here! *{bride} & {groom}*'s wedding is in 2 days!\n\n📅 {date} at {time}\n📍 {venue}\n🗺️ Directions: {maps}\n\nSee you there! 💕",
+  photo: "📸 *Wedding Photos Are Here!*\n\nDear {name},\n\nThank you for being part of our special day! 🌸\n\nView & download here:\n👉 {album}\n\nWith love,\n{bride} & {groom} 💕"
+};
+
+// ── INIT ────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', function() {
+  settings  = JSON.parse(localStorage.getItem('wm_settings') || '{}');
+  driveLink = localStorage.getItem('wm_drive') || '';
+  loadSettingsFields();
+  loadTemplatesFromStorage();
+  updateReminderDates();
+  var dl = document.getElementById('drive-link');
+  if (dl && driveLink) dl.value = driveLink;
+  if (settings.sheetUrl) loadGuests();
+});
+
+// ── NAV ─────────────────────────────────────────
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
+  var pg = document.getElementById('page-' + id);
+  if (pg) pg.classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (id === 'reminders') updateMsgPreview();
+}
+
+// ── SETTINGS ────────────────────────────────────
+function loadSettingsFields() {
+  var map = { sheetUrl:'s-sheet-url', bride:'s-bride', groom:'s-groom', date:'s-date', time:'s-time', venue:'s-venue', address:'s-address', maps:'s-maps', photo:'s-photo', token:'s-token' };
+  Object.keys(map).forEach(function(k) {
+    var el = document.getElementById(map[k]);
+    if (el && settings[k]) el.value = settings[k];
+  });
+}
+
+function saveSettings() {
+  var map = { sheetUrl:'s-sheet-url', bride:'s-bride', groom:'s-groom', date:'s-date', time:'s-time', venue:'s-venue', address:'s-address', maps:'s-maps', photo:'s-photo', token:'s-token' };
+  Object.keys(map).forEach(function(k) {
+    var el = document.getElementById(map[k]);
+    if (el) settings[k] = el.value.trim();
+  });
+  localStorage.setItem('wm_settings', JSON.stringify(settings));
+  updateReminderDates();
+  toast('✅ Settings saved!');
+}
+
+function updateReminderDates() {
+  if (!settings.date) return;
+  var w = new Date(settings.date);
+  var d4 = new Date(w); d4.setDate(d4.getDate()-4);
+  var d2 = new Date(w); d2.setDate(d2.getDate()-2);
+  var fmt = function(d){ return d.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'}); };
+  var e4 = document.getElementById('reminder-4day');
+  var e2 = document.getElementById('reminder-2day');
+  if (e4) e4.textContent = fmt(d4);
+  if (e2) e2.textContent = fmt(d2);
+}
+
+// ── GOOGLE SHEETS (JSONP) ────────────────────────
+function sheetsAPI(action, params) {
+  params = params || {};
+  var url = settings.sheetUrl;
+  if (!url) { toast('❌ Sheet URL not set. Go to Setup tab.'); return Promise.resolve(null); }
+  return new Promise(function(resolve) {
+    var cbName = 'cb' + Date.now();
+    var all = Object.assign({ action: action, callback: cbName }, params);
+    var qs  = Object.keys(all).map(function(k){ return k + '=' + encodeURIComponent(all[k]); }).join('&');
+    var tag = document.createElement('script');
+    var timer = setTimeout(function(){ cleanup(); toast('❌ Timed out'); resolve(null); }, 12000);
+    function cleanup(){ clearTimeout(timer); delete window[cbName]; if(tag.parentNode) tag.parentNode.removeChild(tag); }
+    window[cbName] = function(data){ cleanup(); resolve(data); };
+    tag.onerror = function(){ cleanup(); toast('❌ Script error — redeploy Apps Script'); resolve(null); };
+    tag.src = url + '?' + qs;
+    document.head.appendChild(tag);
+  });
+}
+
+function testConnection() {
+  var box = document.getElementById('conn-box');
+  box.classList.remove('hidden');
+  box.innerHTML = '<div class="conn-box"><div class="cdot chk"></div><span>Testing connection...</span></div>';
+  sheetsAPI('ping').then(function(res) {
+    if (res && res.status === 'ok') {
+      box.innerHTML = '<div class="conn-box"><div class="cdot ok"></div><span style="color:var(--green)">✅ ' + res.message + '</span></div>';
+      loadGuests(); toast('✅ Connected!');
+    } else {
+      var err = res ? JSON.stringify(res) : 'No response';
+      box.innerHTML = '<div class="conn-box"><div class="cdot err"></div><span style="color:var(--red)">❌ Failed: ' + err + '</span></div>';
+    }
+  });
+}
+
+// ── GUESTS ──────────────────────────────────────
+function loadGuests() {
+  var tbody = document.getElementById('guest-tbody');
+  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)"><span class="spin"></span>Loading...</td></tr>';
+  sheetsAPI('getGuests').then(function(res) {
+    if (!res) return;
+    guests = res.guests || [];
+    renderGuests(); updateStats();
+  });
+}
+
+function addGuest() {
+  var name  = document.getElementById('g-name').value.trim();
+  var phone = document.getElementById('g-phone').value.trim();
+  var group = document.getElementById('g-group').value;
+  if (!name || !phone) { toast('Please enter name and phone'); return; }
+  if (!phone.startsWith('+')) { toast('Phone must start with + and country code'); return; }
+  sheetsAPI('addGuest', { name:name, phone:phone, group:group }).then(function(res) {
+    if (res && res.success) {
+      guests.unshift({ id:res.id, name:name, phone:phone, group:group, rsvp:'Pending', notified:'No' });
+      renderGuests(); updateStats();
+      document.getElementById('g-name').value = '';
+      document.getElementById('g-phone').value = '';
+      toast(name + ' added ✓');
+    }
+  });
+}
+
+function removeGuest(id, name) {
+  if (!confirm('Delete ' + name + '?')) return;
+  sheetsAPI('deleteGuest', { id:id }).then(function(res) {
+    if (res && res.success) {
+      guests = guests.filter(function(g){ return g.id !== id; });
+      renderGuests(); updateStats(); toast('Deleted');
+    }
+  });
+}
+
+function updateRSVP(id, val) {
+  sheetsAPI('updateRSVP', { id:id, rsvp:val });
+  var g = guests.find(function(g){ return g.id === id; });
+  if (g) { g.rsvp = val; updateStats(); }
+}
+
+function renderGuests() {
+  var tbody = document.getElementById('guest-tbody');
+  if (!guests.length) {
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty"><div class="empty-i">👥</div><p>No guests yet.<br/>Add your first guest above.</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = guests.map(function(g) {
+    return '<tr>' +
+      '<td><strong style="font-weight:500">' + esc(g.name) + '</strong></td>' +
+      '<td class="muted">' + esc(g.phone) + '</td>' +
+      '<td><span class="badge badge-muted">' + esc(g.group) + '</span></td>' +
+      '<td><select class="rsvp-sel" onchange="updateRSVP(\'' + g.id + '\',this.value)">' +
+        '<option' + (g.rsvp==='Pending'?' selected':'') + '>Pending</option>' +
+        '<option' + (g.rsvp==='Confirmed'?' selected':'') + '>Confirmed</option>' +
+        '<option' + (g.rsvp==='Declined'?' selected':'') + '>Declined</option>' +
+      '</select></td>' +
+      '<td>' + (g.notified==='Yes'?'<span class="badge badge-green">Sent</span>':'<span class="badge badge-muted">Not sent</span>') + '</td>' +
+      '<td><div class="flex">' +
+        '<button class="btn btn-green btn-sm" onclick="sendToOne(\'' + g.id + '\',\'' + escA(g.name) + '\',\'' + escA(g.phone) + '\')">📱</button>' +
+        '<button class="btn btn-danger btn-sm" onclick="removeGuest(\'' + g.id + '\',\'' + escA(g.name) + '\')">🗑</button>' +
+      '</div></td></tr>';
+  }).join('');
+}
+
+function updateStats() {
+  document.getElementById('stat-total').textContent     = guests.length;
+  document.getElementById('stat-invited').textContent   = guests.filter(function(g){ return g.notified==='Yes'; }).length;
+  document.getElementById('stat-confirmed').textContent = guests.filter(function(g){ return g.rsvp==='Confirmed'; }).length;
+  document.getElementById('stat-declined').textContent  = guests.filter(function(g){ return g.rsvp==='Declined'; }).length;
+}
+
+// ── TEMPLATES ───────────────────────────────────
+function loadTemplatesFromStorage() {
+  var saved = JSON.parse(localStorage.getItem('wm_templates') || '{}');
+  ['invite','reminder4','reminder2','photo'].forEach(function(k) {
+    var el = document.getElementById('tpl-' + k);
+    if (el) el.value = saved[k] || DEFAULT_TPLS[k];
+  });
+}
+
+function saveTemplates() {
+  var t = {};
+  ['invite','reminder4','reminder2','photo'].forEach(function(k) {
+    var el = document.getElementById('tpl-' + k);
+    if (el) t[k] = el.value;
+  });
+  localStorage.setItem('wm_templates', JSON.stringify(t));
+  toast('✅ Templates saved!');
+}
+
+function setActiveTpl(el) { activeTpl = el; }
+
+function insertVar(v) {
+  if (!activeTpl) { toast('Click inside a template first'); return; }
+  var s = activeTpl.selectionStart, e = activeTpl.selectionEnd, val = activeTpl.value;
+  activeTpl.value = val.slice(0,s) + v + val.slice(e);
+  activeTpl.selectionStart = activeTpl.selectionEnd = s + v.length;
+  activeTpl.focus();
+}
+
+function resetTpl(k) {
+  if (!confirm('Reset to default?')) return;
+  var el = document.getElementById('tpl-' + k);
+  if (el) el.value = DEFAULT_TPLS[k];
+  toast('Reset to default');
+}
+
+function getTpl(k) {
+  var saved = JSON.parse(localStorage.getItem('wm_templates') || '{}');
+  return saved[k] || DEFAULT_TPLS[k];
+}
+
+function buildMsg(name, tplKey) {
+  var s = settings;
+  var dt = s.date ? new Date(s.date).toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'}) : '';
+  return getTpl(tplKey)
+    .replace(/{name}/g,name).replace(/{bride}/g,s.bride||'').replace(/{groom}/g,s.groom||'')
+    .replace(/{date}/g,dt).replace(/{time}/g,s.time||'').replace(/{venue}/g,s.venue||'')
+    .replace(/{address}/g,s.address||'').replace(/{maps}/g,s.maps||'')
+    .replace(/{photo}/g,s.photo||'').replace(/{album}/g,driveLink||'');
+}
+
+function previewTpl(k) {
+  var lbl = {invite:'Invitation',reminder4:'4-Day Reminder',reminder2:'2-Day Reminder',photo:'Photo Album'};
+  document.getElementById('preview-title').textContent = lbl[k]||'Preview';
+  document.getElementById('preview-body').textContent  = buildMsg('Ravi',k);
+  document.getElementById('preview-modal').classList.add('open');
+}
+
+function updateMsgPreview() {
+  var el = document.getElementById('msg-preview');
+  if (el) el.textContent = buildMsg('Ravi','invite');
+}
+
+// ── WHATSAPP ────────────────────────────────────
+function wasenderSend(to, body) {
+  if (!settings.token) return Promise.resolve({ ok:false, error:'API token not set.' });
+  return fetch('https://www.wasenderapi.com/api/send-message', {
+    method:'POST',
+    headers:{ 'Authorization':'Bearer ' + settings.token, 'Content-Type':'application/json' },
+    body: JSON.stringify({ to:to, text:body })
+  }).then(function(r){ return r.json(); }).then(function(d) {
+    var ok = d.success===true || (d.data && d.data.status);
+    return ok ? {ok:true} : {ok:false, error: d.message||JSON.stringify(d)};
+  }).catch(function(e){ return {ok:false, error:e.message}; });
+}
+
+function sendToOne(id, name, phone) {
+  openModal('Sending to ' + name, 'Sending WhatsApp message...');
+  wasenderSend(phone, buildMsg(name,'invite')).then(function(res) {
+    if (res.ok) {
+      sheetsAPI('updateNotified',{id:id,notified:'Yes'});
+      var g = guests.find(function(x){ return x.id===id; });
+      if (g) g.notified='Yes';
+      renderGuests(); updateStats();
+      setModalResult('✅ Sent to ' + name);
+    } else { setModalResult('❌ Failed: ' + res.error); }
+  });
+}
+
+function sendBulkInvite() {
+  if (!guests.length) { toast('No guests yet'); return; }
+  openModal('Sending Invitations','Sending to ' + guests.length + ' guests...');
+  var ok=0,fail=0,chain=Promise.resolve();
+  guests.forEach(function(g) {
+    chain = chain.then(function() {
+      return wasenderSend(g.phone, buildMsg(g.name,'invite')).then(function(res) {
+        if (res.ok){ sheetsAPI('updateNotified',{id:g.id,notified:'Yes'}); g.notified='Yes'; ok++; } else fail++;
+        setModalResult('Sent: '+ok+' | Failed: '+fail);
+      });
+    });
+  });
+  chain.then(function(){ renderGuests(); updateStats(); setModalResult('✅ Done! Sent: '+ok+' | Failed: '+fail); });
+}
+
+function sendReminder(tplKey) {
+  if (!guests.length) { toast('No guests yet'); return; }
+  var lbl = tplKey==='reminder4'?'4-Day':'2-Day';
+  openModal('Sending '+lbl+' Reminders','Sending to '+guests.length+' guests...');
+  var ok=0,fail=0,chain=Promise.resolve();
+  guests.forEach(function(g) {
+    chain = chain.then(function() {
+      return wasenderSend(g.phone, buildMsg(g.name,tplKey)).then(function(res) {
+        if(res.ok)ok++; else fail++;
+        setModalResult('Sent: '+ok+' | Failed: '+fail);
+      });
+    });
+  });
+  chain.then(function(){ setModalResult('✅ Done! Sent: '+ok+' | Failed: '+fail); });
+}
+
+function sendBlast() {
+  var msg = document.getElementById('blast-msg').value.trim();
+  if (!msg) { toast('Please type a message'); return; }
+  if (!guests.length) { toast('No guests yet'); return; }
+  openModal('Sending Blast','Sending to '+guests.length+' guests...');
+  var ok=0,fail=0,chain=Promise.resolve();
+  guests.forEach(function(g) {
+    chain = chain.then(function() {
+      return wasenderSend(g.phone, msg.replace(/{name}/g,g.name)).then(function(res) {
+        if(res.ok)ok++; else fail++;
+        setModalResult('Sent: '+ok+' | Failed: '+fail);
+      });
+    });
+  });
+  chain.then(function(){ setModalResult('✅ Done! Sent: '+ok+' | Failed: '+fail); });
+}
+
+function sendPhotoLink() {
+  if (!driveLink) { toast('Please save a Drive link first'); return; }
+  if (!guests.length) { toast('No guests yet'); return; }
+  openModal('Sending Photo Album','Sending to '+guests.length+' guests...');
+  var ok=0,fail=0,chain=Promise.resolve();
+  guests.forEach(function(g) {
+    chain = chain.then(function() {
+      return wasenderSend(g.phone, buildMsg(g.name,'photo')).then(function(res) {
+        if(res.ok)ok++; else fail++;
+        setModalResult('Sent: '+ok+' | Failed: '+fail);
+      });
+    });
+  });
+  chain.then(function(){ setModalResult('✅ Done! Sent: '+ok+' | Failed: '+fail); });
+}
+
+// ── CSV ─────────────────────────────────────────
+function exportCSV() {
+  var rows = [['Name','Phone','Group','RSVP','Notified']].concat(guests.map(function(g){ return [g.name,g.phone,g.group,g.rsvp,g.notified]; }));
+  var csv  = rows.map(function(r){ return r.map(function(c){ return '"'+c+'"'; }).join(','); }).join('\n');
+  var a    = document.createElement('a');
+  a.href   = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'wedding-guests.csv'; a.click();
+}
+
+function importCSV(input) {
+  var file = input.files[0]; if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var lines = e.target.result.split('\n').slice(1);
+    var added=0, chain=Promise.resolve();
+    lines.forEach(function(line) {
+      if (!line.trim()) return;
+      var cols  = line.split(',').map(function(c){ return c.replace(/^"|"$/g,'').trim(); });
+      if (cols[0]&&cols[1]) {
+        chain = chain.then(function() {
+          return sheetsAPI('addGuest',{name:cols[0],phone:cols[1],group:cols[2]||'Other'}).then(function(res){ if(res&&res.success)added++; });
+        });
+      }
+    });
+    chain.then(function(){ loadGuests(); toast(added+' guests imported ✓'); });
+  };
+  reader.readAsText(file); input.value='';
+}
+
+// ── MISC ────────────────────────────────────────
+function saveDriveLink() {
+  driveLink = document.getElementById('drive-link').value.trim();
+  localStorage.setItem('wm_drive', driveLink);
+  toast('✅ Drive link saved!');
+}
+
+function openModal(title,sub) {
+  document.getElementById('modal-title').textContent  = title;
+  document.getElementById('modal-sub').textContent    = sub;
+  document.getElementById('modal-progress').innerHTML = '<p style="font-size:13px;color:var(--muted);margin-top:8px"><span class="spin"></span>Sending...</p>';
+  document.getElementById('send-modal').classList.add('open');
+}
+function setModalResult(h){ document.getElementById('modal-progress').innerHTML='<p style="font-size:13px;margin-top:8px">'+h+'</p>'; }
+function closeModal()  { document.getElementById('send-modal').classList.remove('open'); }
+function closePreview(){ document.getElementById('preview-modal').classList.remove('open'); }
+
+var _tt;
+function toast(msg) {
+  var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(_tt); _tt=setTimeout(function(){ t.classList.remove('show'); },2800);
+}
+
+function esc(s)  { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escA(s) { return String(s).replace(/'/g,"\\'"); }
+</script>
 </body>
 </html>

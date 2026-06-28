@@ -556,16 +556,27 @@ function sheetsAPI(action, params) {
 }
 
 function testConnection() {
+  // Read URL directly from input — no need to save first
+  var urlInput = document.getElementById('s-sheet-url');
+  var url = urlInput ? urlInput.value.trim() : '';
+  if (!url) { toast('❌ Please paste your Apps Script URL first'); return; }
+  // Temporarily set in settings for sheetsAPI to use
+  settings.sheetUrl = url;
+
   var box = document.getElementById('conn-box');
   box.classList.remove('hidden');
   box.innerHTML = '<div class="conn-box"><div class="cdot chk"></div><span>Testing connection...</span></div>';
   sheetsAPI('ping').then(function(res) {
     if (res && res.status === 'ok') {
       box.innerHTML = '<div class="conn-box"><div class="cdot ok"></div><span style="color:var(--green)">✅ ' + res.message + '</span></div>';
+      // Save the URL since it works
+      settings.sheetUrl = url;
+      localStorage.setItem('wm_settings', JSON.stringify(settings));
       loadGuests(); toast('✅ Connected!');
+    } else if (res && res.error) {
+      box.innerHTML = '<div class="conn-box"><div class="cdot err"></div><span style="color:var(--red)">❌ Script error: ' + res.error + '</span></div>';
     } else {
-      var err = res ? JSON.stringify(res) : 'No response';
-      box.innerHTML = '<div class="conn-box"><div class="cdot err"></div><span style="color:var(--red)">❌ Failed: ' + err + '</span></div>';
+      box.innerHTML = '<div class="conn-box"><div class="cdot err"></div><span style="color:var(--red)">❌ No response — make sure Access is set to <strong>Anyone</strong> when deploying</span></div>';
     }
   });
 }

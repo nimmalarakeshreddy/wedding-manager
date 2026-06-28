@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<title>Wedding Manager 🌸</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ══ NAVBAR ══════════════════════════════════════ -->
+<nav class="nav">
+  <div class="nav-brand">✦ Wedding Manager</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active"  onclick="showPage('setup',this)">⚙ Setup</button>
+    <button class="nav-tab"         onclick="showPage('templates',this)">✉ Templates</button>
+    <button class="nav-tab"         onclick="showPage('guests',this)">👥 Guests</button>
+    <button class="nav-tab"         onclick="showPage('reminders',this)">🔔 Remind</button>
+    <button class="nav-tab"         onclick="showPage('photos',this)">📸 Photos</button>
+  </div>
+</nav>
+
+<!-- ══ SETUP ════════════════════════════════════════ -->
+<div class="page active" id="page-setup">
+  <div class="page-header">
+    <h1 class="page-title">Wedding Setup</h1>
+    <p class="page-desc">Connect Google Sheets as your database — guest list syncs across all devices automatically.</p>
+  </div>
+
+  <div class="notice notice-green">
+    <strong>✅ How it works:</strong> Guests & RSVP data live in a Google Sheet. Any phone, tablet or laptop that opens this app reads from the same sheet in real time — no accounts, no sync buttons.
+  </div>
+
+  <!-- Google Sheets Connection -->
+  <div class="card">
+    <div class="card-title">Google Sheets Connection</div>
+
+    <div class="field">
+      <label>Apps Script Web App URL</label>
+      <div class="input-group">
+        <input type="url" id="s-sheet-url" placeholder="https://script.google.com/macros/s/YOUR_ID/exec"/>
+        <button class="btn btn-gold" onclick="testConnection()">Test</button>
+      </div>
+      <div class="hint">Paste your deployed Google Apps Script URL. See the one-time setup steps below.</div>
+    </div>
+
+    <div id="conn-status-box" class="hidden mt-8"></div>
+
+    <div class="notice notice-yellow mt-12 mb-0">
+      <strong>📋 One-time Google Setup (5 min):</strong><br/>
+      1. Open <strong>google-apps-script.gs</strong> → copy all the code<br/>
+      2. Go to <strong>script.google.com</strong> → New Project → paste code → Save<br/>
+      3. Click <strong>Deploy → New Deployment → Web App</strong><br/>
+      4. Execute as: <strong>Me</strong> &nbsp;·&nbsp; Who has access: <strong>Anyone</strong><br/>
+      5. Click Deploy → Copy the Web App URL → paste above → Test
+    </div>
+  </div>
+
+  <!-- Couple & Event -->
+  <div class="card">
+    <div class="card-title">Couple & Event Details</div>
+    <div class="grid-2">
+      <div class="field"><label>Bride's Name</label><input type="text" id="s-bride" placeholder="e.g. Sri Harshita Bokka"/></div>
+      <div class="field"><label>Groom's Name</label><input type="text" id="s-groom" placeholder="e.g. Vivek Matcha"/></div>
+      <div class="field"><label>Wedding Date</label><input type="date" id="s-date"/></div>
+      <div class="field"><label>Ceremony Time</label><input type="time" id="s-time"/></div>
+    </div>
+    <div class="field"><label>Venue Name</label><input type="text" id="s-venue" placeholder="e.g. Bliss, Dallas TX"/></div>
+    <div class="field"><label>Venue Address</label><input type="text" id="s-address" placeholder="Full address for guests"/></div>
+    <div class="field"><label>Google Maps Link 📍</label><input type="url" id="s-maps" placeholder="https://maps.app.goo.gl/..."/></div>
+    <div class="field"><label>Couple Photo URL 📸</label><input type="url" id="s-photo" placeholder="https://i.imgur.com/yourphoto.jpg"/></div>
+  </div>
+
+  <!-- WasenderAPI -->
+  <div class="card">
+    <div class="card-title">WasenderAPI — WhatsApp Sender</div>
+    <div class="field">
+      <label>API Token</label>
+      <input type="password" id="s-token" placeholder="Paste your WasenderAPI token here"/>
+      <div class="hint">Get from wasenderapi.com → Your Instance → Credentials tab → API Access Token</div>
+    </div>
+  </div>
+
+  <div class="actions-row">
+    <button class="btn btn-primary" onclick="saveSettings()">💾 Save Settings</button>
+    <button class="btn btn-outline" onclick="showPage('templates', document.querySelectorAll('.nav-tab')[1])">Next: Templates →</button>
+  </div>
+</div>
+
+<!-- ══ TEMPLATES ═════════════════════════════════════ -->
+<div class="page" id="page-templates">
+  <div class="page-header">
+    <h1 class="page-title">Message Templates</h1>
+    <p class="page-desc">Write your own messages. Click any variable tag to insert it at the cursor position.</p>
+  </div>
+
+  <div class="notice notice-blue">
+    <strong>Available variables — click to insert:</strong>
+    <div class="tpl-vars">
+      <span class="tpl-var" onclick="insertVar('{name}')">👤 {name}</span>
+      <span class="tpl-var" onclick="insertVar('{bride}')">👰 {bride}</span>
+      <span class="tpl-var" onclick="insertVar('{groom}')">🤵 {groom}</span>
+      <span class="tpl-var" onclick="insertVar('{date}')">📅 {date}</span>
+      <span class="tpl-var" onclick="insertVar('{time}')">⏰ {time}</span>
+      <span class="tpl-var" onclick="insertVar('{venue}')">📍 {venue}</span>
+      <span class="tpl-var" onclick="insertVar('{address}')">🏠 {address}</span>
+      <span class="tpl-var" onclick="insertVar('{maps}')">🗺 {maps}</span>
+      <span class="tpl-var" onclick="insertVar('{photo}')">📸 {photo}</span>
+      <span class="tpl-var" onclick="insertVar('{album}')">🖼 {album}</span>
+    </div>
+  </div>
+
+  <!-- Invitation -->
+  <div class="card">
+    <div class="card-title">🌸 Wedding Invitation</div>
+    <div class="field">
+      <label>Message</label>
+      <textarea id="tpl-invite" rows="10" onfocus="setActiveTpl(this)"></textarea>
+    </div>
+    <div class="actions-row mt-0">
+      <button class="btn btn-outline btn-sm" onclick="previewTpl('invite')">👁 Preview</button>
+      <button class="btn btn-gold btn-sm" onclick="resetTpl('invite')">↺ Reset Default</button>
+    </div>
+  </div>
+
+  <!-- 4-Day Reminder -->
+  <div class="card">
+    <div class="card-title">⏰ 4-Day Reminder</div>
+    <div class="field">
+      <label>Message</label>
+      <textarea id="tpl-reminder4" rows="9" onfocus="setActiveTpl(this)"></textarea>
+    </div>
+    <div class="actions-row mt-0">
+      <button class="btn btn-outline btn-sm" onclick="previewTpl('reminder4')">👁 Preview</button>
+      <button class="btn btn-gold btn-sm" onclick="resetTpl('reminder4')">↺ Reset Default</button>
+    </div>
+  </div>
+
+  <!-- 2-Day Reminder -->
+  <div class="card">
+    <div class="card-title">🔔 2-Day Reminder</div>
+    <div class="field">
+      <label>Message</label>
+      <textarea id="tpl-reminder2" rows="9" onfocus="setActiveTpl(this)"></textarea>
+    </div>
+    <div class="actions-row mt-0">
+      <button class="btn btn-outline btn-sm" onclick="previewTpl('reminder2')">👁 Preview</button>
+      <button class="btn btn-gold btn-sm" onclick="resetTpl('reminder2')">↺ Reset Default</button>
+    </div>
+  </div>
+
+  <!-- Photo Album -->
+  <div class="card">
+    <div class="card-title">📸 Photo Album (After Wedding)</div>
+    <div class="field">
+      <label>Message</label>
+      <textarea id="tpl-photo" rows="10" onfocus="setActiveTpl(this)"></textarea>
+    </div>
+    <div class="actions-row mt-0">
+      <button class="btn btn-outline btn-sm" onclick="previewTpl('photo')">👁 Preview</button>
+      <button class="btn btn-gold btn-sm" onclick="resetTpl('photo')">↺ Reset Default</button>
+    </div>
+  </div>
+
+  <div class="actions-row">
+    <button class="btn btn-primary" onclick="saveTemplates()">💾 Save All Templates</button>
+    <button class="btn btn-outline" onclick="showPage('guests', document.querySelectorAll('.nav-tab')[2])">Next: Guests →</button>
+  </div>
+</div>
+
+<!-- ══ GUESTS ════════════════════════════════════════ -->
+<div class="page" id="page-guests">
+  <div class="page-header">
+    <h1 class="page-title">Guest List</h1>
+    <p class="page-desc">Saved in Google Sheets — visible on every device instantly.</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total</div></div>
+    <div class="stat-box"><div class="stat-num" id="stat-invited">0</div><div class="stat-label">Invited</div></div>
+    <div class="stat-box"><div class="stat-num" id="stat-confirmed">0</div><div class="stat-label">Confirmed</div></div>
+    <div class="stat-box"><div class="stat-num" id="stat-declined">0</div><div class="stat-label">Declined</div></div>
+  </div>
+
+  <!-- Add Guest -->
+  <div class="add-form">
+    <div class="card-title mb-0" style="margin-bottom:14px">Add Guest</div>
+    <div class="add-form-row">
+      <div class="field" style="margin:0">
+        <label>Name</label>
+        <input type="text" id="g-name" placeholder="Full name" onkeydown="if(event.key==='Enter')addGuest()"/>
+      </div>
+      <div class="field" style="margin:0">
+        <label>Phone (+ country code)</label>
+        <input type="tel" id="g-phone" placeholder="+919876543210" onkeydown="if(event.key==='Enter')addGuest()"/>
+      </div>
+      <div class="field" style="margin:0">
+        <label>Group</label>
+        <select id="g-group">
+          <option>Family</option>
+          <option>Friends</option>
+          <option>Colleagues</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="field" style="margin:0">
+        <label>&nbsp;</label>
+        <button class="btn btn-rose btn-full" onclick="addGuest()">+ Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bulk Actions -->
+  <div class="actions-row" style="margin-bottom:14px">
+    <button class="btn btn-green btn-sm" onclick="sendBulkInvite()">📱 Invite All</button>
+    <button class="btn btn-outline btn-sm" onclick="loadGuests()">🔄 Refresh</button>
+    <button class="btn btn-gold btn-sm" onclick="exportCSV()">⬇ CSV</button>
+    <button class="btn btn-outline btn-sm" onclick="document.getElementById('csv-inp').click()">⬆ Import</button>
+    <input type="file" id="csv-inp" accept=".csv" style="display:none" onchange="importCSV(this)"/>
+  </div>
+
+  <!-- Table -->
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Group</th>
+            <th>RSVP</th>
+            <th>Notified</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="guest-tbody">
+          <tr>
+            <td colspan="6">
+              <div class="empty-state">
+                <div class="empty-icon">👥</div>
+                <p>Connect Google Sheets in Setup,<br/>then guests will appear here.</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ REMINDERS ═════════════════════════════════════ -->
+<div class="page" id="page-reminders">
+  <div class="page-header">
+    <h1 class="page-title">Reminders</h1>
+    <p class="page-desc">Send your saved message templates to all guests with one tap.</p>
+  </div>
+
+  <!-- Live Preview -->
+  <div class="card">
+    <div class="card-title">Live Message Preview</div>
+    <p class="text-small text-muted" style="margin-bottom:10px">Preview of the Invitation template for a guest named "Ravi"</p>
+    <div class="wa-preview">
+      <div class="wa-bubble" id="msg-preview">Loading preview...</div>
+    </div>
+    <div class="actions-row mt-12">
+      <button class="btn btn-outline btn-sm" onclick="showPage('templates', document.querySelectorAll('.nav-tab')[1])">✏ Edit Templates</button>
+      <button class="btn btn-gold btn-sm" onclick="updateMsgPreview()">🔄 Refresh Preview</button>
+    </div>
+  </div>
+
+  <!-- Schedule -->
+  <div class="card">
+    <div class="card-title">Send Reminders</div>
+    <div class="reminder-list">
+      <div class="reminder-item">
+        <div class="rdot active"></div>
+        <div class="rinfo">
+          <div class="rtitle">Initial Invitation</div>
+          <div class="rsub">Uses the Invitation template · sends to all guests</div>
+        </div>
+        <button class="btn btn-green btn-sm" onclick="sendBulkInvite()">Send All</button>
+      </div>
+      <div class="reminder-item">
+        <div class="rdot pending"></div>
+        <div class="rinfo">
+          <div class="rtitle">4-Day Reminder</div>
+          <div class="rsub" id="reminder-4day">4 days before wedding</div>
+        </div>
+        <button class="btn btn-gold btn-sm" onclick="sendReminder('reminder4')">Send Now</button>
+      </div>
+      <div class="reminder-item">
+        <div class="rdot pending"></div>
+        <div class="rinfo">
+          <div class="rtitle">2-Day Reminder</div>
+          <div class="rsub" id="reminder-2day">2 days before wedding</div>
+        </div>
+        <button class="btn btn-rose btn-sm" onclick="sendReminder('reminder2')">Send Now</button>
+      </div>
+      <div class="reminder-item">
+        <div class="rdot blue"></div>
+        <div class="rinfo">
+          <div class="rtitle">Photo Album</div>
+          <div class="rsub">After the wedding — sends Google Drive album link</div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="showPage('photos', document.querySelectorAll('.nav-tab')[4])">Setup →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Blast -->
+  <div class="card">
+    <div class="card-title">Custom Message Blast</div>
+    <div class="field">
+      <label>Message (use {name} to personalize)</label>
+      <textarea id="blast-msg" rows="5" placeholder="e.g. Hi {name}! Please confirm your attendance for the wedding..."></textarea>
+    </div>
+    <button class="btn btn-primary" onclick="sendBlast()">📱 Send to All Guests</button>
+  </div>
+</div>
+
+<!-- ══ PHOTOS ════════════════════════════════════════ -->
+<div class="page" id="page-photos">
+  <div class="page-header">
+    <h1 class="page-title">Photo Sharing</h1>
+    <p class="page-desc">After the wedding, send your Google Drive album to all guests.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Steps</div>
+    <div class="photo-steps">
+      <div class="photo-step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>Upload photos to Google Drive</h3>
+          <p>Create a new folder → upload all wedding photos → Right-click folder → Share → Anyone with the link → Viewer.</p>
+        </div>
+      </div>
+      <div class="photo-step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>Paste the shareable link</h3>
+          <div class="field mt-8">
+            <label>Google Drive Album Link</label>
+            <div class="input-group">
+              <input type="url" id="drive-link" placeholder="https://drive.google.com/drive/folders/..."/>
+              <button class="btn btn-gold" onclick="saveDriveLink()">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="photo-step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>Send album to all guests</h3>
+          <p>Uses your Photo Album template from the Templates tab. Edit the message there.</p>
+          <div class="actions-row mt-8">
+            <button class="btn btn-primary" onclick="sendPhotoLink()">📸 Send Album to All Guests</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PREVIEW MODAL ════════════════════════════════ -->
+<div class="modal-overlay" id="preview-modal">
+  <div class="modal">
+    <h2 id="preview-title">Message Preview</h2>
+    <p class="modal-sub">How the message will look for a guest named "Ravi"</p>
+    <div class="wa-preview">
+      <div class="wa-bubble" id="preview-body" style="max-width:100%"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closePreview()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SEND MODAL ════════════════════════════════════ -->
+<div class="modal-overlay" id="send-modal">
+  <div class="modal">
+    <h2 id="modal-title">Sending</h2>
+    <p class="modal-sub" id="modal-sub"></p>
+    <div id="modal-progress"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ══ APP SCRIPT ════════════════════════════════════ -->
+<script src="app.js"></script>
+
+</body>
+</html>
